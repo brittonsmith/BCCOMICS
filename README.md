@@ -1,31 +1,31 @@
 # BCCOMICS
 BCCOMICS - Baryon CDM COsMological Initial Condition generator for Small scales.
 
-Small-scale fluctuations in the early universe, even at redshift as high as z=200, are found strongy affected by large-scale density and streaming-velocity environments. BCCOMICS is an initial condition generator that allows study of structure formation inside a simulation box of < 4 comoving Mpc, where the simulation box can have non-zero overdensity (Delta) and streaming velocity (V_cb = mean velocity of CDM - mean velocity of baryon) as its environmental condition. This allows study of cosmic variance of e.g. first star formation under varying large-scale environments.
+Small-scale fluctuations in the early universe, even at redshifts as high as z=200, are found to be strongly affected by large-scale density and streaming-velocity environments. BCCOMICS is an initial condition generator that allows the study of structure formation inside a simulation box of < 4 comoving Mpc, where the simulation box can have non-zero overdensity (&Delta;) and streaming velocity (V<sub>cb</sub> = mean velocity of CDM - mean velocity of baryon) as its environmental condition. This allows for the study of cosmic variance of e.g., first star formation under varying large-scale environments.
 
 Currently, it only supports [enzo](http://enzo-project.org). We are inviting contributors to help port this to [Gadget](https://wwwmpa.mpa-garching.mpg.de/gadget/), [RAMSES](https://bitbucket.org/rteyssie/ramses/overview), and many other fabulous N-body+hydro simulation codes.
 
 The main code is composed of two parts.
 
-(1) Realization of large-scale fluctuations (at a length resolution of 4 Mpc comoving) and transfer function calculation (`bccomics_setup.m`):  
-Because the perturbation theory studying the dual impact from large-scale Delta and V_cb on small-scale fluctuations is relatively new ([Ahn 2016](http://adsabs.harvard.edu/abs/2016ApJ...830...68A)), transfer functions from usual linear Boltzmann solvers such as CAMB do not provide the level of accuracy of this new theory. Even when Delta variance is not considered, the suppression of high-k (around k~100/Mpc) modes due to V_cb ([Tseliakhovich & Hirata 2010](http://adsabs.harvard.edu/abs/2010PhRvD..82h3520T)) is not reflected in transfer function from CAMB. "bccomics_setup.m" makes realization of environmental variables, and once the user chooses a specific "patch" of generically non-zero Delta and V_cb, it calculates and records the transfer function.
+1. Realization of large-scale fluctuations (at a length resolution of 4 Mpc comoving) and transfer function calculation (`bccomics_setup.m`):  
+Because the perturbation theory studying the dual impact from large-scale &Delta; and V<sub>cb</sub> on small-scale fluctuations is relatively new ([Ahn 2016](http://adsabs.harvard.edu/abs/2016ApJ...830...68A)), transfer functions from the usual linear Boltzmann solvers, such as CAMB, do not provide the level of accuracy of this new theory. Even when &Delta; variance is not considered, the suppression of high-k (around k~100/Mpc) modes due to V<sub>cb</sub> ([Tseliakhovich & Hirata 2010](http://adsabs.harvard.edu/abs/2010PhRvD..82h3520T)) is not reflected in the transfer function from CAMB. "bccomics_setup.m" makes a realization of environmental variables, and once the user chooses a specific "patch" of generically non-zero &Delta; and V<sub>cb</sub>, it calculates and records the transfer function.
 
-(2) Realization of small-scale fluctuations on a selected patch (`bccomics.m`):  
-The user is asked again to choose one from already calculated set of patches, and then the corresponding transfer function is read in and used to generate 3D data of CDM and baryons. Currently, following data in simple bianry form and in enzo units are generated:  
-(a) CDM particle positions (cpos1, cpos2, cpos3)  
-(b) CDM particle velocities (vc1, vc2, vc3)  
-(c) baryon grid density (db)  
-(d) baryon grid velocities (vb1, vb2, vb3)  
-(e) baryon grid thermal energy (etherm)  
-(f) baryon grid kinetic+thermal energy (etot)  
-(g) baryon particle positions (bpos1, bpos2, bpos3) (optional; with SPH in mind)  
-(h) baryon particle velocities (vpb1, vpb2, vpb3) (optional; with SPH in mind)  
-(i) baryon particle thermal energy (eptherm) (optional; with SPH in mind)  
+2. Realization of small-scale fluctuations on a selected patch (`bccomics.m`):  
+The user is asked again to choose one from a previously-calculated set of patches, and then the corresponding transfer function is read in and used to generate 3D data of CDM and baryons. Currently, the following data are generated:  
+a. CDM particle positions (cpos1, cpos2, cpos3)  
+b. CDM particle velocities (vc1, vc2, vc3)  
+c. baryon grid density (db)  
+d. baryon grid velocities (vb1, vb2, vb3)  
+e. baryon grid thermal energy (etherm)  
+f. baryon grid kinetic+thermal energy (etot)  
+g. baryon particle positions (bpos1, bpos2, bpos3) (optional, for SPH)  
+h. baryon particle velocities (vpb1, vpb2, vpb3) (optional, for SPH)  
+i. baryon particle thermal energy (eptherm) (optional, for SPH)  
+Data is written in [Enzo's](https://enzo.readthedocs.io) internal unit system.  
+**If using MATLAB, initial conditions can be saved directly to Enzo's HDF5 format. Saving to HDF5 is not supported in OCTAVE, but a Python script for converting the native output to Enzo format is provided.**  
+**Items _g_, _h_, and _i_ can be written when `baryonparticleflag=true` and `particlevelocity_accuracyflag=true` in `params_patch.m`.**
 
-*In case of MATLAB, initial conditions in hdf5 binary, ready to be used for enzo, can be generated.  
-** (g), (h), (i) can be written when `baryonparticleflag=true` and `particlevelocity_accuracyflag=true` in `params_patch.m`.  
-
-(3) (OCTAVE-only) Conversion of binary data from step (2) into enzo-usable initial conditions, by "convert_enzo.py" using python+h5py. 
+3. (OCTAVE-only) Conversion of binary data from step (2) into enzo-usable initial conditions, by "convert_enzo.py" using python+h5py. 
 
 ## Installation and Requirements
 
